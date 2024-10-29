@@ -32,7 +32,19 @@ const MenuScreen = ({ navigation, route }) => {
   };
 
   const handleCategoryPress = (categoryName) => {
-    navigation.navigate('Cocina', { category: categoryName, userId });
+    if (categoryName === 'Cocina') {
+      navigation.navigate('Cocina', { category: categoryName, userId });
+    } else if (categoryName === 'Frio') {
+      navigation.navigate('Frio', { category: categoryName, userId });
+    } else if (categoryName === 'Barra') {
+      navigation.navigate('Barra', { category: categoryName, userId });
+    } else if (categoryName === 'Limpieza') {
+      navigation.navigate('Limpieza', { category: categoryName, userId });
+    } else if (categoryName === 'Licores') {
+      navigation.navigate('Licores', { category: categoryName, userId });
+    } else if (categoryName === 'Desechables') {
+      navigation.navigate('Desechables', { category: categoryName, userId });
+    }
   };
 
   return (
@@ -79,35 +91,35 @@ const MenuScreen = ({ navigation, route }) => {
             />
             <Text style={styles.categoryText}>Cocina</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryBox}>
+          <TouchableOpacity style={styles.categoryBox} onPress={() => handleCategoryPress('Frio')}>
             <Image
               source={require('./assets/images/cuartofrio.png')}
               style={styles.categoryImage}
             />
             <Text style={styles.categoryText}>Cuarto Frio</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryBox}>
+          <TouchableOpacity style={styles.categoryBox}  onPress={() => handleCategoryPress('Barra')}>
             <Image
               source={require('./assets/images/barra.png')}
               style={styles.categoryImage}
             />
             <Text style={styles.categoryText}>Barra</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryBox}>
+          <TouchableOpacity style={styles.categoryBox} onPress={() => handleCategoryPress('Limpieza')}>
             <Image
               source={require('./assets/images/limpieza.png')}
               style={styles.categoryImage}
             />
             <Text style={styles.categoryText}>Limpieza</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryBox}>
+          <TouchableOpacity style={styles.categoryBox} onPress={() => handleCategoryPress('Licores')}>
             <Image
               source={require('./assets/images/licores.png')}
               style={styles.categoryImage}
             />
             <Text style={styles.categoryText}>Licores</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryBox}>
+          <TouchableOpacity style={styles.categoryBox} onPress={() => handleCategoryPress('Desechables')}>
             <Image
               source={require('./assets/images/desechables.png')}
               style={styles.categoryImage}

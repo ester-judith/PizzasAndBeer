@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import firebaseConfig from './firebase';
 
-const FrioScreen = ({ navigation, route }) => {
+const LimpiezaScreen = ({ navigation, route }) => {
   const { userId, category } = route.params;
   const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
@@ -53,7 +53,7 @@ const FrioScreen = ({ navigation, route }) => {
         });
 
         // Filtrar productos por la categoría "cocina"
-        const filteredProducts = productsData.filter(product => product.categoria && product.categoria.toLowerCase() === 'cuarto frio');
+        const filteredProducts = productsData.filter(product => product.categoria && product.categoria.toLowerCase() === 'limpieza');
         console.log("Productos filtrados:", filteredProducts);
         setProducts(filteredProducts);
 
@@ -85,12 +85,12 @@ const FrioScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.background}>
-      <View style={styles.headerContainer}>
+      <View style={styles.headerContainers}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu')}>
           <Image source={require('./assets/images/back-icon.png')} style={styles.backIcon} />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Cuarto Frío</Text>
+        <Text style={styles.title}>Limpieza</Text>
 
         <TouchableOpacity>
           <Image source={require('./assets/images/check-icon.png')} style={styles.icon} />
@@ -232,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FrioScreen;
+export default LimpiezaScreen;

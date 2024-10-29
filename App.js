@@ -8,6 +8,10 @@ import MenuScreen from './MenuScreen';
 import MenuAdminScreen from './MenuAdminScreen'
 import CocinaScreen from './CocinaScreen'
 import FrioScreen from './FrioScreen';
+import BarraScreen from './BarraScreen';
+import LimpiezaScreen from './LimpiezaScreen';
+import LicoresScreen from './LicoresScreen';
+import DesechablesScreen from './DesechablesScreen';
 
 const Stack = createStackNavigator();
 
@@ -43,6 +47,26 @@ const App = () => {
         <Stack.Screen 
           name="Frio" 
           component={FrioScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Barra" 
+          component={BarraScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Limpieza" 
+          component={LimpiezaScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Licores" 
+          component={LicoresScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Desechables" 
+          component={DesechablesScreen} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>
