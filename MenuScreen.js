@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity,
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
-const MenuScreen = ({ navigation }) => {
+const MenuScreen = ({ navigation, route }) => {
+  const { userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
 
   SplashScreen.preventAutoHideAsync();
@@ -31,7 +32,7 @@ const MenuScreen = ({ navigation }) => {
   };
 
   const handleCategoryPress = (categoryName) => {
-    navigation.navigate('Productos', { category: categoryName });
+    navigation.navigate('Cocina', { category: categoryName, userId });
   };
 
   return (
