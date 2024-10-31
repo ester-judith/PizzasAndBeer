@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ImageBackground, Image } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import firebaseConfig from './firebase';
 
 const AdminScreen = ({ navigation }) => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   SplashScreen.preventAutoHideAsync();
 
@@ -21,12 +23,27 @@ const AdminScreen = ({ navigation }) => {
     }
   }, [fontsLoaded]);
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'password123') {
-      Alert.alert('Inicio de sesión exitoso');
-      navigation.navigate('MenuAdmin');
-    } else {
-      Alert.alert('Credenciales incorrectas');
+  const handleLogin = async () => {
+    setLoading(true);
+
+    try {
+      const querySnapshot = await firebaseConfig.db.collection('user')
+      .where('username','==',username)
+      .where('password','==',password)
+      .get();
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0]; // Obtener el primer documento
+        const userId = userDoc.id; // Obtener el ID del usuario
+        Alert.alert('Inicio de sesión exitoso');
+        navigation.navigate('MenuAdmin', { userId }); // Pasar userId a la siguiente pantalla
+      } else {
+        Alert.alert('Credenciales incorrectas');
+      }
+    } catch (error) {
+      Alert.alert('Error al inicio de sesión', error.message);
+    } finally {
+      setLoading(false);
     }
   };
 

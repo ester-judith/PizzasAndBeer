@@ -34,18 +34,14 @@ const LimpiezaScreen = ({ navigation, route }) => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        console.log("Obteniendo productos en la categoria:", category);
-        console.log("User ID: ", userId);
         const querySnapshot = await firebaseConfig.db
           .collection('user')
           .doc(userId)
           .collection('productos')
           .get();
 
-        console.log("Cantidad de documentos encontrados:", querySnapshot.size);
         const productsData = querySnapshot.docs.map(doc => {
           const data = doc.data();
-          console.log("Producto encontrado:", data);
           return {
             id: doc.id,
             ...data,
@@ -54,14 +50,12 @@ const LimpiezaScreen = ({ navigation, route }) => {
 
         // Filtrar productos por la categoría "cocina"
         const filteredProducts = productsData.filter(product => product.categoria && product.categoria.toLowerCase() === 'limpieza');
-        console.log("Productos filtrados:", filteredProducts);
         setProducts(filteredProducts);
 
         if (filteredProducts.length === 0) {
           Alert.alert("No se encontraron productos en la categoría cocina.");
         }
       } catch (error) {
-        console.error("Error al obtener los productos:", error); // Para más información
         Alert.alert("Error", "No se pudieron cargar los productos. Intenta de nuevo más tarde.");
       } finally {
         setLoading(false);
