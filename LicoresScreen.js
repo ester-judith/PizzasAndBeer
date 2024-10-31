@@ -61,7 +61,8 @@ const LicoresScreen = ({ navigation, route }) => {
           Alert.alert("No se encontraron productos en la categoría cocina.");
         }
       } catch (error) {
-        console.error("Error al obtener los productos:", error);
+        console.error("Error al obtener los productos:", error); // Para más información
+        Alert.alert("Error", "No se pudieron cargar los productos. Intenta de nuevo más tarde.");
       } finally {
         setLoading(false);
       }
@@ -80,12 +81,13 @@ const LicoresScreen = ({ navigation, route }) => {
 
   // Filtrar productos basado en el texto de búsqueda
   const filteredProducts = products.filter(product => {
-    return product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
+    return product.nombreProducto && 
+           product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
   });
 
   return (
     <View style={styles.background}>
-      <View style={styles.headerContainers}>
+      <View style={styles.headerContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu')}>
           <Image source={require('./assets/images/back-icon.png')} style={styles.backIcon} />
         </TouchableOpacity>

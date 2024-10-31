@@ -31,6 +31,22 @@ const MenuScreen = ({ navigation, route }) => {
     navigation.navigate('Login');
   };
 
+  const branchMapping = {
+    'herradura': 'Sucursal Herradura',
+    'mexicali': 'Sucursal Mexicali',
+    'monterrey': 'Sucursal Monterrey',
+    'sexta': 'Sucursal Sexta',
+    'siete': 'Sucursal Siete',
+    'veinte': 'Sucursal Veinte',
+  };
+
+  const [sucursalName, setSucursalName] = useState('');
+
+  useEffect (() => {
+    const branchName = branchMapping[userId] || 'Sucursal desconocida';
+    setSucursalName(branchName);
+  }, [userId]);
+
   const handleCategoryPress = (categoryName) => {
     if (categoryName === 'Cocina') {
       navigation.navigate('Cocina', { category: categoryName, userId });
@@ -63,7 +79,7 @@ const MenuScreen = ({ navigation, route }) => {
 
           <View style={styles.welcomeContainer}>
             <Text style={styles.welcomeText}>Bienvenido</Text>
-            <Text style={styles.sucursalText}>Sucursal Monterrey</Text>
+            <Text style={styles.sucursalText}>{sucursalName}</Text>
           </View>
 
           <TouchableOpacity onPress={() => setModalVisible(true)}>

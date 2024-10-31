@@ -73,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Usuario"
-            placeholderTextColor="#FFD700"
+            placeholderTextColor="white"
             value={username}
             onChangeText={setUsername}
           />

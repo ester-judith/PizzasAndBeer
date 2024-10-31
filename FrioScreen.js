@@ -61,7 +61,8 @@ const FrioScreen = ({ navigation, route }) => {
           Alert.alert("No se encontraron productos en la categoría cocina.");
         }
       } catch (error) {
-        console.error("Error al obtener los productos:", error);
+        console.error("Error al obtener los productos:", error); // Para más información
+        Alert.alert("Error", "No se pudieron cargar los productos. Intenta de nuevo más tarde.");
       } finally {
         setLoading(false);
       }
@@ -80,7 +81,8 @@ const FrioScreen = ({ navigation, route }) => {
 
   // Filtrar productos basado en el texto de búsqueda
   const filteredProducts = products.filter(product => {
-    return product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
+    return product.nombreProducto && 
+           product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
   });
 
   return (
@@ -90,7 +92,7 @@ const FrioScreen = ({ navigation, route }) => {
           <Image source={require('./assets/images/back-icon.png')} style={styles.backIcon} />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Cuarto Frío</Text>
+        <Text style={styles.title}>Cuarto Frio</Text>
 
         <TouchableOpacity>
           <Image source={require('./assets/images/check-icon.png')} style={styles.icon} />
