@@ -72,45 +72,45 @@ const MenuScreen = ({ navigation, route }) => {
       <ScrollView contentContainerStyle={styles.categoriesContainer}>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/cocina.png')}
+            source={require('./assets/images/sucursal7.jpg')}
             style={styles.categoryImage}
           />
           <Text style={styles.categoryText}>Sucursal 7</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/cuartofrio.png')}
+            source={require('./assets/images/sucursal6.jpg')}
             style={styles.categoryImage}
           />
           <Text style={styles.categoryText}>Sucursal 6</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/barra.png')}
+            source={require('./assets/images/sucursal20.jpg')}
             style={styles.categoryImage}
           />
           <Text style={styles.categoryText}>Sucursal 20</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/limpieza.png')}
+            source={require('./assets/images/sucursal26.jpg')}
             style={styles.categoryImage}
           />
           <Text style={styles.categoryText}>Sucursal 26</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/licores.png')}
+            source={require('./assets/images/sucursalmty.jpg')}
             style={styles.categoryImage}
           />
           <Text style={styles.categoryText}>Sucursal Monterrey</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.categoryBox}>
           <Image
-            source={require('./assets/images/desechables.png')}
+            source={require('./assets/images/sucursalmxl.jpg')}
             style={styles.categoryImage}
           />
-          <Text style={styles.categoryText}>Sucursal SL Ar</Text>
+          <Text style={styles.categoryText}>Sucursal Mexicali</Text>
         </TouchableOpacity>
       </ScrollView>
 
