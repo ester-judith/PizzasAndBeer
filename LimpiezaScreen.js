@@ -7,7 +7,8 @@ import firebaseConfig from './firebase';
 const LimpiezaScreen = ({ navigation, route }) => {
   const { userId, category } = route.params;
   const [products, setProducts] = useState([]);
-  const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
+  const [editedStocks, setEditedStocks] = useState({});
+  const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -47,8 +48,6 @@ const LimpiezaScreen = ({ navigation, route }) => {
             ...data,
           };
         });
-
-        // Filtrar productos por la categoría "cocina"
         const filteredProducts = productsData.filter(product => product.categoria && product.categoria.toLowerCase() === 'limpieza');
         setProducts(filteredProducts);
 
@@ -65,6 +64,55 @@ const LimpiezaScreen = ({ navigation, route }) => {
     fetchProducts();
   }, [userId, category]);
 
+  const handleStockChange = (productId, value) => {
+    // Permitir temporalmente valores vacíos o solo con un punto decimal
+    if (value === '' || value === '.') {
+      setEditedStocks({
+        ...editedStocks,
+        [productId]: value, // Guardar el valor de texto temporalmente
+      });
+      return;
+    }
+  
+    // Convertir a decimal si es un número válido y >= 0
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue) && numericValue >= 0) {
+      setEditedStocks({
+        ...editedStocks,
+        [productId]: value, // Mantenerlo como texto en el estado
+      });
+    }
+  };
+  
+
+  const handleUpdateStock = async () => {
+    try {
+      const updates = products.map(async product => {
+        const stockValue = editedStocks[product.id];
+        if (stockValue !== undefined && stockValue !== '') {
+          // Convertir a número antes de guardar en la base de datos
+          const numericStock = parseFloat(stockValue);
+          
+          await firebaseConfig.db
+            .collection('user')
+            .doc(userId)
+            .collection('productos')
+            .doc(product.id)
+            .update({
+              stock: numericStock, // Guardar como número
+              LastUp: new Date(), // Actualizar la fecha
+            });
+        }
+      });
+  
+      await Promise.all(updates);
+      Alert.alert("Actualización exitosa", "El stock ha sido actualizado.");
+      setEditedStocks({}); // Limpiar el estado editado
+    } catch (error) {
+      Alert.alert("Error", "No se pudo actualizar el stock. Intenta de nuevo.");
+    }
+  };
+  
   const formatDate = (timestamp) => {
     if (timestamp && timestamp.seconds) {
       const date = new Date(timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000));
@@ -88,7 +136,7 @@ const LimpiezaScreen = ({ navigation, route }) => {
 
         <Text style={styles.title}>Limpieza</Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleUpdateStock}>
           <Image source={require('./assets/images/check-icon.png')} style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -98,7 +146,7 @@ const LimpiezaScreen = ({ navigation, route }) => {
         placeholder="Buscar producto" 
         placeholderTextColor="#888" 
         value={searchText}
-        onChangeText={text => setSearchText(text)} // Actualiza el estado de búsqueda
+        onChangeText={text => setSearchText(text)}
       />
 
       {loading ? (
@@ -109,8 +157,17 @@ const LimpiezaScreen = ({ navigation, route }) => {
             filteredProducts.map((product) => (
               <View key={product.id} style={styles.productItem}>
                 <Text style={styles.productName}>{product.nombreProducto}</Text>
-                <Text style={styles.productDate}>{formatDate(product.LastUp)}</Text>
+
                 <Text style={styles.productCategory}>{product.categoria}</Text>
+                <Text style={styles.label}>Stock:</Text>
+                <TextInput
+                  style={styles.stockInput}
+                  keyboardType="numeric"
+                  value={editedStocks[product.id] ?? ' '}
+                  onChangeText={(value) => handleStockChange(product.id, value)}
+                />
+
+                <Text style={styles.productDate}>Última actualización: {formatDate(product.LastUp)}</Text>
               </View>
             ))
           ) : (
@@ -181,13 +238,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  productDate: {
-    fontSize: 14,
-    color: 'gray',
-  },
   productCategory: {
     fontSize: 14,
     color: 'blue',
+  },
+  label: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+  stockInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginTop: 5,
+    fontSize: 16,
+  },
+  productDate: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 5,
   },
   noProductsText: {
     color: 'white',
