@@ -7,7 +7,6 @@ import * as Sharing from 'expo-sharing';
 import firebaseConfig from './firebase';
 
 const MenuAdminScreen = ({ navigation, route }) => {
-  const { userId } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +45,6 @@ const MenuAdminScreen = ({ navigation, route }) => {
 
   const fetchProductsForBranch = async (branchId) => {
     setLoading(true);
-    console.log(`Fetching products for branch: ${branchId}`);
     try {
       const querySnapshot = await firebaseConfig.db
         .collection('user')

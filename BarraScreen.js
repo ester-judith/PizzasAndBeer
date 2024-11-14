@@ -283,10 +283,6 @@ const styles = StyleSheet.create({
     width: 50, 
     height: 50, 
   },
-  productCategory: {
-    fontSize: 14,
-    color: 'blue',
-  },
   label: {
     fontSize: 16,
     marginTop: 10,

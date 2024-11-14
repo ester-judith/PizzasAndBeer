@@ -33,10 +33,10 @@ const AdminScreen = ({ navigation }) => {
       .get();
 
       if (!querySnapshot.empty) {
-        const userDoc = querySnapshot.docs[0]; // Obtener el primer documento
-        const userId = userDoc.id; // Obtener el ID del usuario
+        const userDoc = querySnapshot.docs[0]; 
+        const userId = userDoc.id; 
         Alert.alert('Inicio de sesión exitoso');
-        navigation.navigate('MenuAdmin', { userId }); // Pasar userId a la siguiente pantalla
+        navigation.navigate('MenuAdmin', { userId }); 
       } else {
         Alert.alert('Credenciales incorrectas');
       }
@@ -84,7 +84,7 @@ const AdminScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Usuario"
-            placeholderTextColor="#FFD700"
+            placeholderTextColor="white"
             value={username}
             onChangeText={setUsername}
           />
