@@ -34,7 +34,15 @@ const AdminScreen = ({ navigation }) => {
 
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0]; 
-        const userId = userDoc.id; 
+        const userId = userDoc.id;
+        
+        const blockedUserIds = ['herradura','mexicali','monterrey','sexta','siete','veinte'];
+        if (blockedUserIds.includes(userId)){
+          Alert.alert('Acceso denegado', 'Tipo de usuario denegado');
+          navigation.navigate('Login'); // Redirigir al Login si está bloqueado
+          return;
+        }
+
         Alert.alert('Inicio de sesión exitoso');
         navigation.navigate('MenuAdmin', { userId }); 
       } else {

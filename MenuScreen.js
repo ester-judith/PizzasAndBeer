@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 const MenuScreen = ({ navigation, route }) => {
-  const { userId } = route.params;
+  const { userId } = route.params || {};
   const [modalVisible, setModalVisible] = useState(false);
 
   SplashScreen.preventAutoHideAsync();
@@ -86,12 +86,6 @@ const MenuScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Buscar..."
-        placeholderTextColor="#888"
-      />
-
       <View style={styles.imageFrame}>
         <Image
           source={require('./assets/images/comida.jpg')}
@@ -153,7 +147,7 @@ const MenuScreen = ({ navigation, route }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Opciones</Text>
+            <Text style={styles.modalText}>¿Deseas cerrar sesión?</Text>
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
               <Text style={styles.logoutText}>Cerrar sesión</Text>
             </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import firebaseConfig from './firebase';
@@ -77,13 +77,13 @@ const DesechablesScreen = ({ navigation, route }) => {
     // Convertir a decimal si es un número válido y >= 0
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue) && numericValue >= 0) {
+      const valueWithLimit = value.length <= 3 ? value : value.slice(0, 3);
       setEditedStocks({
         ...editedStocks,
-        [productId]: value, // Mantenerlo como texto en el estado
+        [productId]: valueWithLimit, // Mantenerlo como texto en el estado
       });
     }
   };
-  
 
   const handleUpdateStock = async () => {
     try {
@@ -112,7 +112,7 @@ const DesechablesScreen = ({ navigation, route }) => {
       Alert.alert("Error", "No se pudo actualizar el stock. Intenta de nuevo.");
     }
   };
-  
+
   const formatDate = (timestamp) => {
     if (timestamp && timestamp.seconds) {
       const date = new Date(timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000));
@@ -127,10 +127,24 @@ const DesechablesScreen = ({ navigation, route }) => {
            product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
   });
 
+  const renderItem = ({ item }) => (
+    <View style={styles.productItem}>
+      <Text style={styles.productName}>{item.nombreProducto}</Text>
+      <Text style={styles.label}>Stock:</Text>
+      <TextInput
+        style={styles.stockInput}
+        keyboardType="numeric"
+        value={editedStocks[item.id] ?? ' '}
+        onChangeText={(value) => handleStockChange(item.id, value)}
+      />
+      <Text style={styles.productDate}>Última actualización: {formatDate(item.LastUp)}</Text>
+    </View>
+  );
+
   return (
     <View style={styles.background}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu', {userId})}>
           <Image source={require('./assets/images/back-icon.png')} style={styles.backIcon} />
         </TouchableOpacity>
 
@@ -152,28 +166,13 @@ const DesechablesScreen = ({ navigation, route }) => {
       {loading ? (
         <Text style={styles.loadingText}>Cargando productos...</Text>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <View key={product.id} style={styles.productItem}>
-                <Text style={styles.productName}>{product.nombreProducto}</Text>
-
-                <Text style={styles.productCategory}>{product.categoria}</Text>
-                <Text style={styles.label}>Stock:</Text>
-                <TextInput
-                  style={styles.stockInput}
-                  keyboardType="numeric"
-                  value={editedStocks[product.id] ?? ' '}
-                  onChangeText={(value) => handleStockChange(product.id, value)}
-                />
-
-                <Text style={styles.productDate}>Última actualización: {formatDate(product.LastUp)}</Text>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.noProductsText}>No hay productos disponibles en esta categoría.</Text>
-          )}
-        </ScrollView>
+        <FlatList
+          data={filteredProducts}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          numColumns={2} // Establece el número de columnas
+          contentContainerStyle={styles.gridContainer}
+        />
       )}
 
       <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -228,11 +227,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  gridContainer: {
+    paddingBottom: 20,
+  },
   productItem: {
     marginBottom: 20,
     padding: 10,
     backgroundColor: 'white',
     borderRadius: 10,
+    width: '45%', // Controla el ancho de cada celda para que quepan en la grid
+    marginRight: '5%', // Espacio entre las columnas
   },
   productName: {
     fontSize: 18,

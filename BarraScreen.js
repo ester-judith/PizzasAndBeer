@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import firebaseConfig from './firebase';
@@ -8,7 +8,7 @@ const BarraScreen = ({ navigation, route }) => {
   const { userId, category } = route.params;
   const [products, setProducts] = useState([]);
   const [editedStocks, setEditedStocks] = useState({});
-  const [searchText, setSearchText] = useState(''); // Estado para el texto de búsqueda
+  const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -48,8 +48,6 @@ const BarraScreen = ({ navigation, route }) => {
             ...data,
           };
         });
-
-        // Filtrar productos por la categoría "cocina"
         const filteredProducts = productsData.filter(product => product.categoria && product.categoria.toLowerCase() === 'barra');
         setProducts(filteredProducts);
 
@@ -79,9 +77,10 @@ const BarraScreen = ({ navigation, route }) => {
     // Convertir a decimal si es un número válido y >= 0
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue) && numericValue >= 0) {
+      const valueWithLimit = value.length <= 3 ? value : value.slice(0, 3);
       setEditedStocks({
         ...editedStocks,
-        [productId]: value, // Mantenerlo como texto en el estado
+        [productId]: valueWithLimit, // Mantenerlo como texto en el estado
       });
     }
   };
@@ -113,7 +112,7 @@ const BarraScreen = ({ navigation, route }) => {
       Alert.alert("Error", "No se pudo actualizar el stock. Intenta de nuevo.");
     }
   };
-  
+
   const formatDate = (timestamp) => {
     if (timestamp && timestamp.seconds) {
       const date = new Date(timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000));
@@ -128,10 +127,24 @@ const BarraScreen = ({ navigation, route }) => {
            product.nombreProducto.toLowerCase().includes(searchText.toLowerCase());
   });
 
+  const renderItem = ({ item }) => (
+    <View style={styles.productItem}>
+      <Text style={styles.productName}>{item.nombreProducto}</Text>
+      <Text style={styles.label}>Stock:</Text>
+      <TextInput
+        style={styles.stockInput}
+        keyboardType="numeric"
+        value={editedStocks[item.id] ?? ' '}
+        onChangeText={(value) => handleStockChange(item.id, value)}
+      />
+      <Text style={styles.productDate}>Última actualización: {formatDate(item.LastUp)}</Text>
+    </View>
+  );
+
   return (
     <View style={styles.background}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu')}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Menu', {userId})}>
           <Image source={require('./assets/images/back-icon.png')} style={styles.backIcon} />
         </TouchableOpacity>
 
@@ -147,33 +160,19 @@ const BarraScreen = ({ navigation, route }) => {
         placeholder="Buscar producto" 
         placeholderTextColor="#888" 
         value={searchText}
-        onChangeText={text => setSearchText(text)} // Actualiza el estado de búsqueda
+        onChangeText={text => setSearchText(text)}
       />
 
       {loading ? (
         <Text style={styles.loadingText}>Cargando productos...</Text>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 20 }}>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <View key={product.id} style={styles.productItem}>
-                <Text style={styles.productName}>{product.nombreProducto}</Text>
-                
-                <Text style={styles.productCategory}>{product.categoria}</Text>
-                <Text style={styles.label}>Stock:</Text>
-                <TextInput
-                  style={styles.stockInput}
-                  keyboardType="numeric"
-                  value={editedStocks[product.id] ?? ' '}
-                  onChangeText={(value) => handleStockChange(product.id, value)}
-                />
-                <Text style={styles.productDate}>Última actualización: {formatDate(product.LastUp)}</Text>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.noProductsText}>No hay productos disponibles en esta categoría.</Text>
-          )}
-        </ScrollView>
+        <FlatList
+          data={filteredProducts}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          numColumns={2} // Establece el número de columnas
+          contentContainerStyle={styles.gridContainer}
+        />
       )}
 
       <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -228,23 +227,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  gridContainer: {
+    paddingBottom: 20,
+  },
   productItem: {
     marginBottom: 20,
     padding: 10,
     backgroundColor: 'white',
     borderRadius: 10,
+    width: '45%', // Controla el ancho de cada celda para que quepan en la grid
+    marginRight: '5%', // Espacio entre las columnas
   },
   productName: {
     fontSize: 18,
     fontWeight: 'bold',
   },
-  productDate: {
-    fontSize: 14,
-    color: 'gray',
-  },
   productCategory: {
     fontSize: 14,
     color: 'blue',
+  },
+  label: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+  stockInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginTop: 5,
+    fontSize: 16,
+  },
+  productDate: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 5,
   },
   noProductsText: {
     color: 'white',
@@ -282,20 +301,6 @@ const styles = StyleSheet.create({
   backIcon: {
     width: 50, 
     height: 50, 
-  },
-  label: {
-    fontSize: 16,
-    marginTop: 10,
-    fontWeight: 'bold',
-  },
-  stockInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginTop: 5,
-    fontSize: 16,
   },
 });
 

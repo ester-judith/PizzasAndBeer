@@ -36,6 +36,13 @@ const LoginScreen = ({ navigation }) => {
       if (!querySnapshot.empty) {
         const userDoc = querySnapshot.docs[0]; // Obtener el primer documento
         const userId = userDoc.id; // Obtener el ID del usuario
+
+        const blockedUserIds = ['admin'];
+        if (blockedUserIds.includes(userId)){
+          Alert.alert('Acceso denegado', 'Tipo de usuario denegado');
+          navigation.navigate('Login'); // Redirigir al Login si está bloqueado
+          return;
+        }
         Alert.alert('Inicio de sesión exitoso');
         navigation.navigate('Menu', { userId }); // Pasar userId a la siguiente pantalla
       } else {
