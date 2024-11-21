@@ -86,7 +86,7 @@ const MenuAdminScreen = ({ navigation, route }) => {
       console.log("No branch ID provided");
       return;
     }
-
+  
     Alert.alert(
       'Confirmación',
       `¿Estás seguro que quieres generar el reporte de inventario para la ${branchId}?`,
@@ -95,35 +95,129 @@ const MenuAdminScreen = ({ navigation, route }) => {
         {
           text: 'Generar PDF', onPress: async () => {
             const lowStockProducts = await fetchProductsForBranch(branchId);
-
+  
             // Verifica si hay productos con stock bajo antes de generar el PDF
             if (lowStockProducts.length === 0) {
               Alert.alert("Inventario en orden", "No hay productos con stock bajo.");
               return;
             }
-
-            // Construye el HTML para el PDF
+  
+            // Agrupar productos por categoría
+            const groupedProducts = lowStockProducts.reduce((acc, product) => {
+              const category = product.categoria || 'Sin categoría';
+              if (!acc[category]) acc[category] = [];
+              acc[category].push(product);
+              return acc;
+            }, {});
+  
+            // Construir contenido HTML con márgenes, categorías y espaciado en la tabla
             const htmlContent = `
-              <h1>Reporte de Inventario - Sucursal ${branchId}</h1>
-              <p>Productos con stock bajo:</p>
-              <ul>
-                ${lowStockProducts.map(product => `
-                  <li>${product.nombreProducto}: ${product.stock} / ${product.stockD}</li>
-                `).join('')}
-              </ul>
+              <html>
+                <head>
+                  <style>
+                    /* Configura el tamaño de la página a A4 */
+                    @page {
+                      size: A4;
+                      margin: 40px 30px 40px 30px; /* Márgenes de 40px arriba y abajo, 30px a los lados */
+                    }
+  
+                    body {
+                      font-family: Arial, sans-serif;
+                      margin: 0;
+                      padding: 0;
+                      width: 100%;
+                    }
+  
+                    h1, h2 {
+                      text-align: center;
+                      color: #003B9B;
+                      margin-bottom: 10px;
+                    }
+  
+                    p {
+                      text-align: center;
+                      font-size: 16px;
+                      margin-bottom: 20px;
+                    }
+  
+                    table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin-bottom: 20px; /* Espaciado entre las tablas */
+                    }
+  
+                    th, td {
+                      padding: 8px;
+                      text-align: left;
+                      border: 1px solid #ddd;
+                    }
+  
+                    th {
+                      background-color: #f2f2f2;
+                    }
+  
+                    .category {
+                      margin-top: 30px;
+                      font-size: 18px;
+                      color: #003B9B;
+                      font-weight: bold;
+                      text-decoration: underline;
+                    }
+  
+                    .footer {
+                      margin-top: 40px; /* Espacio adicional al final de la página */
+                      text-align: center;
+                      font-size: 12px;
+                      color: #888;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <h1>Reporte de Inventario - Sucursal ${branchId}</h1>
+                  <p>Fecha: ${new Date().toLocaleDateString()}</p>
+                  <p>Productos con stock bajo:</p>
+                  
+                  ${Object.keys(groupedProducts).map(category => {
+                    const products = groupedProducts[category];
+                    return `
+                      <div class="category">${category}</div>
+                      <table>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Stock Actual</th>
+                          <th>Stock Deseado</th>
+                          <th>Cantidad a Reabastecer</th>
+                        </tr>
+                        ${products.map(product => {
+                          return `
+                            <tr>
+                              <td>${product.nombreProducto}</td>
+                              <td>${product.stock}</td>
+                              <td>${product.stockD}</td>
+                              <td></td> <!-- Deja la celda vacía -->
+                            </tr>
+                          `;
+                        }).join('')}
+                      </table>
+                    `;
+                  }).join('')}
+                  
+                  <div class="footer">Generado automáticamente por el sistema</div> <!-- Pie de página -->
+                </body>
+              </html>
             `;
+  
             console.log("HTML Content:", htmlContent);
-
+  
             try {
               // Genera el PDF con el contenido HTML usando expo-print
               const { uri } = await Print.printToFileAsync({ html: htmlContent });
-
+  
               console.log("PDF generado en:", uri);
-
+  
               // Usar Expo Sharing para permitir que el usuario descargue el archivo
               await Sharing.shareAsync(uri);
               Alert.alert("PDF Generado", "El PDF ha sido generado y está listo para compartirse.");
-
             } catch (error) {
               console.log("Error al generar el PDF:", error);
               Alert.alert("Error", "No se pudo generar el PDF.");
@@ -310,15 +404,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logoutButton: {
-    backgroundColor: '#ff6347',
+    backgroundColor: 'red',
     padding: 10,
-    marginBottom: 10,
     borderRadius: 10,
+    marginBottom: 10,
   },
   closeButtonText: {
-    color: '#ff6347',
+    color: 'blue',
     fontSize: 16,
-    textDecorationLine: 'underline',
+    marginTop: 10,
   },
   loadingContainer: {
     position: 'absolute',
