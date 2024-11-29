@@ -3,7 +3,7 @@
     "name": "Inventario",
     "slug": "Inventario",
     "version": "1.0.0",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -36,6 +36,7 @@
       "eas": {
         "projectId": "83a8b144-7373-4f4c-802b-841f6c3296be"
       }
-    }
+    },
+    "description": ""
   }
 }

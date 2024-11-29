@@ -53,7 +53,6 @@ const MenuAdminScreen = ({ navigation, route }) => {
         .get();
 
       if (querySnapshot.empty) {
-        console.log(`No products found for branch: ${branchId}`);
         return [];
       }
 
@@ -62,18 +61,12 @@ const MenuAdminScreen = ({ navigation, route }) => {
         ...doc.data(),
       }));
 
-      console.log('Products fetched:', productsData);
-
-      // Filtra productos con stock bajo
       const lowStockProducts = productsData.filter(
         product => product.stock < product.stockD
       );
 
-      console.log('Low stock products:', lowStockProducts);
-
       return lowStockProducts;
     } catch (error) {
-      console.log("Error al cargar productos:", error);
       Alert.alert("Error", "No se pudieron cargar los productos de la sucursal.");
       return [];
     } finally {
@@ -83,7 +76,6 @@ const MenuAdminScreen = ({ navigation, route }) => {
 
   const generatePDF = async (branchId) => {
     if (!branchId) {
-      console.log("No branch ID provided");
       return;
     }
   

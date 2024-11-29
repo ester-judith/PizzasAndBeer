@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity, ImageBackground, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, Modal } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -93,7 +93,6 @@ const MenuScreen = ({ navigation, route }) => {
         />
       </View>
 
-      {/* ScrollView solo para la lista de categorías */}
       <ScrollView contentContainerStyle={styles.categoriesContainer}>
         <TouchableOpacity style={styles.categoryBox} onPress={() => handleCategoryPress('Cocina')}>
           <Image
