@@ -1,0 +1,45 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main  # Cambia "main" por la rama donde quieres generar el APK
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # Configura el repositorio
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Configura JDK y Node.js
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Instala dependencias de Node.js
+      - name: Install Dependencies
+        run: npm install
+
+      # Genera el APK
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      # Guarda el APK como artefacto
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
